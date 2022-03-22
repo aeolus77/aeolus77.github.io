@@ -6,7 +6,11 @@
 	<body>
 	<script>
 		function copyToClipboard(){
-		    alert("Hello World");
+		    var copyText = document.getElementById("content").value;
+			navigator.clipboard.writeText(copyText).then(()=>{
+			    //alert the user that the action took place
+			    alert("Copied to clipboard");
+			});
 		}
 	</script>
 		<h1>Empty Page 2</h1>
