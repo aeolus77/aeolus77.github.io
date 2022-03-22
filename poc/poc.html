@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="dark">
 	<head>
 		<title>empty page 2</title>
+		<link rel="stylesheet" type="text/css" href="/css/common.css">
 	</head>
-	<body bgcolor="black">
+	<body>
 	<script>
 		function copyToClipboard(){
 		    var copyText = document.getElementById("content").value;
@@ -19,15 +20,16 @@
 			http.send();
 			http.onreadystatechange=(e)=>{
 				console.log(http.responseText);
+				document.getElementById("content2paste").value = http.responseText;
 			}
 		}
 	</script>
-		<h1>Empty Page 5</h1>
+		<h1>Empty Page 6</h1>
 		<div id="layer1"></div>
 		<textarea id="content"></textarea>
 		<button onclick="copyToClipboard()">Copy</button>
 		<br>
-		<textarea id="content2paste"></textarea>
+		<textarea bgcolor="blue" id="content2paste"></textarea>
 		<br>
 		<button onclick="makeRequest()">weather</button>
 	</body>
