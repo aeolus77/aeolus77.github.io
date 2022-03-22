@@ -1,6 +1,6 @@
 :root{
     --background-color: #212a2e;
-    --text-color: #121416d8;
+    --text-color: #F7F8F8;
     --link-colo: #543fd7;
 }
 html[data-theme='light']{
@@ -13,6 +13,6 @@ html[data-theme='dark']{
     --text-color: #F7F8F8;
     --link-color: #828fff;
 }
- body{
-    --background-color: #212a2e;
+body {
+    background-color: lightblue;
 }
