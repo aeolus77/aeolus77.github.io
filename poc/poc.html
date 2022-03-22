@@ -16,7 +16,8 @@
 		function makeRequest(){
 		    const http = new XMLHttpRequest();
 		    // const url='https://aeolus77.github.io/data/weather.json';
-		    const url='https://data.etabus.gov.hk/v1/transport/kmb/eta/CFB33B4D4B0EA4BA/41A/1';
+		    // const url='https://data.etabus.gov.hk/v1/transport/kmb/eta/CFB33B4D4B0EA4BA/41A/1';
+			const url = document.getElementById("req_url").value;
 			http.open("GET", url);
 			http.send();
 			http.onreadystatechange=(e)=>{
@@ -31,6 +32,8 @@
 		<button onclick="copyToClipboard()">Copy</button>
 		<br>
 		<textarea id="content2paste"></textarea>
+		<br>
+		<input type="text" id="req_url">
 		<br>
 		<button onclick="makeRequest()">weather</button>
 	</body>
