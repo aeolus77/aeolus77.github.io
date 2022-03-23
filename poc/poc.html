@@ -25,6 +25,14 @@
 				document.getElementById("content2paste").value = http.responseText;
 			}
 		}
+		function weather(){
+		    const url='https://aeolus77.github.io/data/weather.json';
+			document.getElementById("req_url").value = url;
+		}
+		function bus_41a(){
+		    const url='https://data.etabus.gov.hk/v1/transport/kmb/eta/CFB33B4D4B0EA4BA/41A/1';
+			document.getElementById("req_url").value = url;
+		}
 	</script>
 		<h1>Empty Page 9</h1>
 		<div id="layer1"></div>
@@ -35,6 +43,10 @@
 		<br>
 		<input type="text" id="req_url">
 		<br>
-		<button onclick="makeRequest()">weather</button>
+		<button onclick="weather()">weather</button>
+		<br>
+		<button onclick="bus_41a()">bus</button>
+		<br>
+		<button onclick="makeRequest()">make request</button>
 	</body>
 </html>
