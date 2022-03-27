@@ -6,6 +6,7 @@
 	</head>
 	<body>
 	<script>
+		var station_id = '';
 		function copyToClipboard(){
 		    var copyText = document.getElementById("content").value;
 			navigator.clipboard.writeText(copyText).then(()=>{
@@ -34,7 +35,7 @@
 			document.getElementById("req_url").value = url;
 		}
 		function bus_station(){
-			const station_id = 'CFB33B4D4B0EA4BA';
+			station_id = 'CFB33B4D4B0EA4BA';
 			const url='https://data.etabus.gov.hk/v1/transport/kmb/stop/';
 			document.getElementById("req_url").value = url+station_id;
 		}
@@ -46,7 +47,7 @@
 		<br>
 		<textarea id="content2paste"></textarea>
 		<br>
-		<input type="text" id="req_url">
+		<input type="text" id="req_url" size="150">
 		<br>
 		<button onclick="weather()">weather</button>
 		<br>
