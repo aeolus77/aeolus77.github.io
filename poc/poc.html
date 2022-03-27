@@ -43,9 +43,12 @@
 			document.getElementById("req_url").value = url+station_id;
 		}
 		function bus_station_eta(){
+			station_id = document.getElementById("stations").value;
 			const url= 'https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/';
 			document.getElementById("req_url").value=url+station_id;
 		}
+		//route's stop info:
+		//https://data.etabus.gov.hk/v1/transport/kmb/route-stop/41A/outbound/1
 	</script>
 		<h1>KMB ETA API</h1>
 		<div id="layer1"></div>
