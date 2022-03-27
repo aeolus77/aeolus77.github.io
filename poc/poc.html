@@ -33,14 +33,12 @@
 		}
 		function bus_41a(){
 			bus_no = '41A';
-			station_id = 'CFB33B4D4B0EA4BA';//青衣邨
-			//station_id = '117F6DFC29E97F0A'//青衣邨商場
+			station_id = document.getElementById("stations").value;
 		    const url='https://data.etabus.gov.hk/v1/transport/kmb/eta/';
 			document.getElementById("req_url").value = url+station_id + '/'+bus_no+'/1';
 		}
 		function bus_station(){
-			station_id = 'CFB33B4D4B0EA4BA';//青衣邨
-			//station_id = '117F6DFC29E97F0A'//青衣邨商場
+			station_id = document.getElementById("stations").value;
 			const url='https://data.etabus.gov.hk/v1/transport/kmb/stop/';
 			document.getElementById("req_url").value = url+station_id;
 		}
@@ -59,6 +57,11 @@
 		<button onclick="bus_41a()">41A eta</button>
 		<br>
 		<button onclick="bus_station()">bus station</button>
+		<br>
+		<select name="stations" id="stations">
+			<option value="CFB33B4D4B0EA4BA">青衣邨</option>
+			<option value="117F6DFC29E97F0A">青衣邨商場</option>
+		</select>
 		<br>
 		<button onclick="makeRequest()">make request</button>
 	</body>
