@@ -7,6 +7,7 @@
 	<body>
 	<script>
 		var station_id = '';
+		var bus_no = '';
 		function copyToClipboard(){
 		    var copyText = document.getElementById("content").value;
 			navigator.clipboard.writeText(copyText).then(()=>{
@@ -31,16 +32,20 @@
 			document.getElementById("req_url").value = url;
 		}
 		function bus_41a(){
-		    const url='https://data.etabus.gov.hk/v1/transport/kmb/eta/CFB33B4D4B0EA4BA/41A/1';
-			document.getElementById("req_url").value = url;
+			bus_no = '41A';
+			station_id = 'CFB33B4D4B0EA4BA';//青衣邨
+			//station_id = '117F6DFC29E97F0A'//青衣邨商場
+		    const url='https://data.etabus.gov.hk/v1/transport/kmb/eta/';
+			document.getElementById("req_url").value = url+station_id + '/'+bus_no+'/1';
 		}
 		function bus_station(){
-			station_id = 'CFB33B4D4B0EA4BA';
+			station_id = 'CFB33B4D4B0EA4BA';//青衣邨
+			//station_id = '117F6DFC29E97F0A'//青衣邨商場
 			const url='https://data.etabus.gov.hk/v1/transport/kmb/stop/';
 			document.getElementById("req_url").value = url+station_id;
 		}
 	</script>
-		<h1>Empty Page 9</h1>
+		<h1>KMB ETA API</h1>
 		<div id="layer1"></div>
 		<textarea id="content"></textarea>
 		<button onclick="copyToClipboard()">Copy</button>
