@@ -31,6 +31,7 @@
 		}
 		function bus_eta(obj){
 			console.log(obj.data[0].eta);
+			document.getElementById("content").value = obj.data[0].eta;
 		}
 		function weather(){
 		    const url='https://aeolus77.github.io/data/weather.json';
