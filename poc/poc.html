@@ -25,7 +25,12 @@
 			http.onreadystatechange=(e)=>{
 				console.log(http.responseText);
 				document.getElementById("content2paste").value = http.responseText;
+				const obj = JSON.parse(http.responseText);
+				bus_eta(obj);
 			}
+		}
+		function bus_eta(obj){
+			console.log(obj.data[0].eta);
 		}
 		function weather(){
 		    const url='https://aeolus77.github.io/data/weather.json';
