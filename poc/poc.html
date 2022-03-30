@@ -34,7 +34,7 @@
 			document.getElementById("content").value = obj.data[0].eta;
 			var response_txt = ''
 			obj.data.forEach(element => {
-				response_txt+=element;
+				response_txt+=element.value
 				response_txt+='\n'
 			});
 			document.getElementById("content2paste").value = response_txt
