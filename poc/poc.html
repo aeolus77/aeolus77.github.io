@@ -32,6 +32,12 @@
 		function bus_eta(obj){
 			console.log(obj.data[0].eta);
 			document.getElementById("content").value = obj.data[0].eta;
+			var response_txt = ''
+			obj.data.forEach(element => {
+				response_txt+=element;
+				response_txt+='\n'
+			});
+			document.getElementById("content2paste").value = response_txt
 		}
 		function weather(){
 		    const url='https://aeolus77.github.io/data/weather.json';
