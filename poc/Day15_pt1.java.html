@@ -1,0 +1,188 @@
+<html>
+<head>
+<title>Day15_pt1.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6897bb;}
+.s3 { color: #6a8759;}
+.s4 { color: #808080;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Day15_pt1.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">day15</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.io.IOException</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Files</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Path</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Paths</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.*</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">Day15_pt1 {</span>
+    <span class="s0">public static void </span><span class="s1">main(String[] argv) </span><span class="s0">throws </span><span class="s1">IOException {</span>
+        <span class="s0">final int </span><span class="s1">STEPS = </span><span class="s2">10</span><span class="s0">;</span>
+        <span class="s1">HashMap&lt;String</span><span class="s0">, </span><span class="s1">String&gt; mappingRules = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">Path input = Paths.get(</span><span class="s3">&quot;input_day15&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">var lines = Files.readAllLines(input)</span><span class="s0">;</span>
+        <span class="s4">/* 
+        //testing data 
+        lines = List.of( 
+            &quot;1163751742&quot;, 
+            &quot;1381373672&quot;, 
+            &quot;2136511328&quot;, 
+            &quot;3694931569&quot;, 
+            &quot;7463417111&quot;, 
+            &quot;1319128137&quot;, 
+            &quot;1359912421&quot;, 
+            &quot;3125421639&quot;, 
+            &quot;1293138521&quot;, 
+            &quot;2311944581&quot; 
+        ); 
+        //*/</span>
+
+        <span class="s0">int</span><span class="s1">[][] input_array = </span><span class="s0">new int</span><span class="s1">[lines.size()][lines.size()]</span><span class="s0">; </span><span class="s4">//assume the input map must be a square (ie. lines.get(0).size() == lines.size()</span>
+
+        <span class="s0">int </span><span class="s1">x_index = </span><span class="s2">0</span><span class="s0">;</span>
+
+        <span class="s0">for</span><span class="s1">(String line: lines) {</span>
+            <span class="s4">//System.out.println(x_index);</span>
+            <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">y = </span><span class="s2">0</span><span class="s0">; </span><span class="s1">y&lt; line.length()</span><span class="s0">; </span><span class="s1">y++){</span>
+                <span class="s1">input_array[x_index][y] = Integer.parseInt(String.valueOf(line.charAt(y)))</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s1">System.out.println(line)</span><span class="s0">;</span>
+            <span class="s1">x_index++</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+        <span class="s1">PriorityQueue&lt;Point&gt; pg = </span><span class="s0">new </span><span class="s1">PriorityQueue&lt;&gt;((point1</span><span class="s0">, </span><span class="s1">point2) -&gt; point1.getDist() - point2.getDist())</span><span class="s0">;</span>
+        <span class="s1">List&lt;Point&gt; visited = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+
+        <span class="s1">Point target = </span><span class="s0">new </span><span class="s1">Point(input_array.length-</span><span class="s2">1</span><span class="s0">, </span><span class="s1">input_array.length-</span><span class="s2">1</span><span class="s0">, </span><span class="s2">0</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">pg.add(</span><span class="s0">new </span><span class="s1">Point(</span><span class="s2">0</span><span class="s0">,</span><span class="s2">0</span><span class="s0">, </span><span class="s2">0</span><span class="s1">))</span><span class="s0">;</span>
+
+        <span class="s1">Point cur = pg.poll()</span><span class="s0">;</span>
+
+        <span class="s0">while</span><span class="s1">(cur!=</span><span class="s0">null</span><span class="s1">) {</span>
+            <span class="s1">visited.add(cur)</span><span class="s0">;</span>
+            <span class="s1">System.out.println(cur)</span><span class="s0">;</span>
+            <span class="s4">//North:</span>
+            <span class="s0">int </span><span class="s1">new_x = cur.getX() - </span><span class="s2">1</span><span class="s0">;</span>
+            <span class="s0">int </span><span class="s1">new_y = cur.getY()</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(new_x &gt; </span><span class="s2">0</span><span class="s1">) {</span>
+                <span class="s1">Point new_point = </span><span class="s0">new </span><span class="s1">Point(new_x</span><span class="s0">, </span><span class="s1">new_y</span><span class="s0">, </span><span class="s1">cur.getDist() + input_array[new_x][new_y])</span><span class="s0">;</span>
+                <span class="s0">if</span><span class="s1">(new_point.equals(target)){</span>
+                    <span class="s1">System.out.println(new_point.getDist())</span><span class="s0">;</span>
+                    <span class="s0">break;</span>
+                <span class="s1">}</span>
+                <span class="s0">if </span><span class="s1">(!visited.contains(new_point) &amp;&amp; !pg.contains(new_point)) {</span>
+                    <span class="s1">pg.add(new_point)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s4">//East:</span>
+            <span class="s1">new_x = cur.getX()</span><span class="s0">;</span>
+            <span class="s1">new_y = cur.getY() + </span><span class="s2">1</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(new_y &lt; input_array[</span><span class="s2">0</span><span class="s1">].length) {</span>
+                <span class="s1">Point new_point = </span><span class="s0">new </span><span class="s1">Point(new_x</span><span class="s0">, </span><span class="s1">new_y</span><span class="s0">, </span><span class="s1">cur.getDist() + input_array[new_x][new_y])</span><span class="s0">;</span>
+                <span class="s0">if</span><span class="s1">(new_point.equals(target)){</span>
+                    <span class="s1">System.out.println(new_point.getDist())</span><span class="s0">;</span>
+                    <span class="s0">break;</span>
+                <span class="s1">}</span>
+                <span class="s0">if </span><span class="s1">(!visited.contains(new_point) &amp;&amp; !pg.contains(new_point)) {</span>
+                    <span class="s1">pg.add(new_point)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s4">//South:</span>
+            <span class="s1">new_x = cur.getX() + </span><span class="s2">1</span><span class="s0">;</span>
+            <span class="s1">new_y = cur.getY()</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(new_x &lt; input_array.length) {</span>
+                <span class="s1">Point new_point = </span><span class="s0">new </span><span class="s1">Point(new_x</span><span class="s0">, </span><span class="s1">new_y</span><span class="s0">, </span><span class="s1">cur.getDist() + input_array[new_x][new_y])</span><span class="s0">;</span>
+                <span class="s0">if</span><span class="s1">(new_point.equals(target)){</span>
+                    <span class="s1">System.out.println(new_point.getDist())</span><span class="s0">;</span>
+                    <span class="s0">break;</span>
+                <span class="s1">}</span>
+                <span class="s0">if </span><span class="s1">(!visited.contains(new_point) &amp;&amp; !pg.contains(new_point)) {</span>
+                    <span class="s1">pg.add(new_point)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s4">//West:</span>
+            <span class="s1">new_x = cur.getX()</span><span class="s0">;</span>
+            <span class="s1">new_y = cur.getY() - </span><span class="s2">1</span><span class="s0">;</span>
+            <span class="s0">if </span><span class="s1">(new_y &gt; </span><span class="s2">0</span><span class="s1">) {</span>
+                <span class="s1">Point new_point = </span><span class="s0">new </span><span class="s1">Point(new_x</span><span class="s0">, </span><span class="s1">new_y</span><span class="s0">, </span><span class="s1">cur.getDist() + input_array[new_x][new_y])</span><span class="s0">;</span>
+                <span class="s0">if</span><span class="s1">(new_point.equals(target)){</span>
+                    <span class="s1">System.out.println(new_point.getDist())</span><span class="s0">;</span>
+                    <span class="s0">break;</span>
+                <span class="s1">}</span>
+                <span class="s0">if </span><span class="s1">(!visited.contains(new_point) &amp;&amp; !pg.contains(new_point)) {</span>
+                    <span class="s1">pg.add(new_point)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s1">cur = pg.poll()</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+<span class="s0">class </span><span class="s1">Point{</span>
+    <span class="s0">private int </span><span class="s1">x</span><span class="s0">;</span>
+    <span class="s0">private int </span><span class="s1">y</span><span class="s0">;</span>
+    <span class="s0">private int </span><span class="s1">dist</span><span class="s0">;</span>
+    <span class="s0">public </span><span class="s1">Point(</span><span class="s0">int </span><span class="s1">x</span><span class="s0">, int </span><span class="s1">y</span><span class="s0">, int </span><span class="s1">dist){</span>
+        <span class="s0">this</span><span class="s1">.setX(x)</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.setY(y)</span><span class="s0">;</span>
+        <span class="s0">this</span><span class="s1">.setDist(dist)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public </span><span class="s1">String toString(){</span>
+        <span class="s0">return this</span><span class="s1">.x + </span><span class="s3">&quot;, &quot; </span><span class="s1">+ </span><span class="s0">this</span><span class="s1">.y + </span><span class="s3">&quot; &quot; </span><span class="s1">+ </span><span class="s0">this</span><span class="s1">.dist</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public boolean </span><span class="s1">equals(Object o) {</span>
+        <span class="s0">if </span><span class="s1">(</span><span class="s0">this </span><span class="s1">== o) </span><span class="s0">return true;</span>
+        <span class="s0">if </span><span class="s1">(o == </span><span class="s0">null </span><span class="s1">|| getClass() != o.getClass()) </span><span class="s0">return false;</span>
+
+        <span class="s1">Point point = (Point) o</span><span class="s0">;</span>
+
+        <span class="s0">if </span><span class="s1">(x != point.x) </span><span class="s0">return false;</span>
+        <span class="s0">return </span><span class="s1">y == point.y</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">public int </span><span class="s1">hashCode() {</span>
+        <span class="s0">int </span><span class="s1">result = x</span><span class="s0">;</span>
+        <span class="s1">result = </span><span class="s2">31 </span><span class="s1">* result + y</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">result</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">getX() {</span>
+        <span class="s0">return </span><span class="s1">x</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setX(</span><span class="s0">int </span><span class="s1">x) {</span>
+        <span class="s0">this</span><span class="s1">.x = x</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">getY() {</span>
+        <span class="s0">return </span><span class="s1">y</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setY(</span><span class="s0">int </span><span class="s1">y) {</span>
+        <span class="s0">this</span><span class="s1">.y = y</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public int </span><span class="s1">getDist() {</span>
+        <span class="s0">return </span><span class="s1">dist</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">setDist(</span><span class="s0">int </span><span class="s1">dist) {</span>
+        <span class="s0">this</span><span class="s1">.dist = dist</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>
