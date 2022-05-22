@@ -1,0 +1,281 @@
+<html>
+<head>
+<title>Day16_pt1.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Day16_pt1.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">day16</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.io.IOException</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Files</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Path</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Paths</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.*</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.stream.Collectors</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.stream.Stream</span><span class="s0">;</span>
+
+<span class="s0">import static </span><span class="s1">java.util.Map.entry</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">Day16_pt1 {</span>
+    <span class="s0">public static void </span><span class="s1">main(String[] argv) </span><span class="s0">throws </span><span class="s1">IOException {</span>
+        <span class="s1">HashMap&lt;String</span><span class="s0">, </span><span class="s1">String&gt; mappingRules = </span><span class="s0">new </span><span class="s1">HashMap&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">Path input = Paths.get(</span><span class="s2">&quot;input_day16&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">var lines = Files.readAllLines(input)</span><span class="s0">;</span>
+        <span class="s3">//*</span>
+        <span class="s3">//testing data</span>
+        <span class="s1">lines = List.of(</span>
+<span class="s3">//                &quot;8A004A801A8002F478&quot;  //sum: 16</span>
+<span class="s3">//                ,</span>
+<span class="s3">//                &quot;620080001611562C8802118E34&quot; //sum: 12</span>
+<span class="s3">//                ,</span>
+<span class="s3">//                &quot;C0015000016115A2E0802F182340&quot; //sum: 23</span>
+<span class="s3">//                ,</span>
+                <span class="s2">&quot;A0016C880162017C3686B18A3D4780&quot; </span><span class="s3">//sum: 31</span>
+        <span class="s1">)</span><span class="s0">;</span>
+        <span class="s3">//*/</span>
+
+
+        <span class="s0">for</span><span class="s1">(String line: lines) {</span>
+            <span class="s1">Queue&lt;Character&gt; input_q = </span><span class="s0">new </span><span class="s1">LinkedList&lt;&gt;()</span><span class="s0">;</span>
+            <span class="s1">Stream&lt;Character&gt; charStream = line.chars().mapToObj(c -&gt; (</span><span class="s0">char</span><span class="s1">)c)</span><span class="s0">;</span>
+            <span class="s1">String input_str = charStream.map(c -&gt; hex2bin(c)).collect(Collectors.joining())</span><span class="s0">;</span>
+<span class="s3">//            String input_str = charStream.map(c -&gt; hex2bin(c)).map(d -&gt;input_q.add(d));</span>
+            <span class="s1">System.out.println(input_str)</span><span class="s0">;</span>
+            <span class="s0">for</span><span class="s1">(</span><span class="s0">char </span><span class="s1">c: input_str.toCharArray()){</span>
+                <span class="s1">input_q.add(c)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s1">var packet = processPacket(input_q)</span><span class="s0">;</span>
+            <span class="s1">System.out.print(</span><span class="s2">&quot;Version sum: &quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">System.out.println(packet.sumVersions())</span><span class="s0">;</span>
+<span class="s3">//            System.out.println(input_q);</span>
+<span class="s3">//            System.out.println(getMsgVersion(input_q));</span>
+<span class="s3">//            System.out.println(getMsgType(input_q));</span>
+            <span class="s3">/* 
+            int numberPacket = 1; 
+            int version = 0; 
+            int type = 0; 
+            int package_len = 0; 
+//            while(package_len&lt;input_str.length()) { 
+            while(type != 4){ 
+                version += getMsgVersion(input_str); 
+                type = getMsgType(input_str); 
+                if (type == 4) { 
+                    package_len = processLiteralValue(input_str); 
+                } else { 
+                    //type ID other than 4 
+                    int length_type_id = Integer.parseInt(input_str.substring(6, 7)); 
+                    if(length_type_id == 0){ 
+                        input_str = processOperator_15(input_str); 
+                    } 
+                    else{ 
+                        //length_type_id == 1; 
+                        numberPacket = processOperator_11(input_str); 
+                        System.out.println(&quot;Number of sub packets: &quot; + numberPacket); 
+                        input_str = input_str.substring(6+1+11); 
+                    } 
+                } 
+                System.out.println(input_str); 
+            } 
+            System.out.println(version); 
+//            for(char x: line.toCharArray()){ 
+//                System.out.print(hex2bin(x)); 
+//            } 
+             */</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">getMsgVersion(String msg){</span>
+        <span class="s0">return </span><span class="s1">Integer.parseInt(msg.substring(</span><span class="s4">0</span><span class="s0">, </span><span class="s4">3</span><span class="s1">)</span><span class="s0">, </span><span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">readNumBit(Queue&lt;Character&gt; input){</span>
+        <span class="s0">int </span><span class="s1">val = </span><span class="s4">0</span><span class="s0">;</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s0">; </span><span class="s1">i&lt;</span><span class="s4">15</span><span class="s0">; </span><span class="s1">i++){</span>
+            <span class="s0">if</span><span class="s1">(input.remove() == </span><span class="s2">'1'</span><span class="s1">){</span>
+                <span class="s1">val = (val&lt;&lt;</span><span class="s4">1</span><span class="s1">) | </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s0">else</span><span class="s1">{</span>
+                <span class="s1">val &lt;&lt;= </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">val</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">readNumSubPacket(Queue&lt;Character&gt; input){</span>
+        <span class="s0">int </span><span class="s1">val = </span><span class="s4">0</span><span class="s0">;</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s0">; </span><span class="s1">i&lt;</span><span class="s4">11</span><span class="s0">; </span><span class="s1">i++){</span>
+            <span class="s0">if</span><span class="s1">(input.remove() == </span><span class="s2">'1'</span><span class="s1">){</span>
+                <span class="s1">val = (val&lt;&lt;</span><span class="s4">1</span><span class="s1">) | </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s0">else</span><span class="s1">{</span>
+                <span class="s1">val &lt;&lt;= </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">val</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">getMsgType(Queue&lt;Character&gt; input){</span>
+        <span class="s0">int </span><span class="s1">val = </span><span class="s4">0</span><span class="s0">;</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">i =</span><span class="s4">0</span><span class="s0">; </span><span class="s1">i&lt;</span><span class="s4">3</span><span class="s0">; </span><span class="s1">i++){</span>
+            <span class="s0">if</span><span class="s1">(input.remove() == </span><span class="s2">'1'</span><span class="s1">){</span>
+                <span class="s1">val = (val &lt;&lt; </span><span class="s4">1</span><span class="s1">) | </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s0">else</span><span class="s1">{</span>
+                <span class="s1">val &lt;&lt;= </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">val</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">getMsgVersion(Queue&lt;Character&gt; input){</span>
+        <span class="s0">int </span><span class="s1">val = </span><span class="s4">0</span><span class="s0">;</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">i =</span><span class="s4">0</span><span class="s0">; </span><span class="s1">i&lt;</span><span class="s4">3</span><span class="s0">; </span><span class="s1">i++){</span>
+            <span class="s0">if</span><span class="s1">(input.remove() == </span><span class="s2">'1'</span><span class="s1">){</span>
+                <span class="s1">val = (val &lt;&lt; </span><span class="s4">1</span><span class="s1">) | </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+            <span class="s0">else</span><span class="s1">{</span>
+                <span class="s1">val &lt;&lt;= </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">val</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">getMsgType(String msg){</span>
+        <span class="s0">return </span><span class="s1">Integer.parseInt(msg.substring(</span><span class="s4">3</span><span class="s0">, </span><span class="s4">6</span><span class="s1">)</span><span class="s0">, </span><span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">processLiteralValue(String msg){</span>
+        <span class="s3">//msg with type ID = 4 &quot;100&quot;</span>
+        <span class="s3">//start from 7th char, 5 chars as a set read until the last set (the set with the starting char as '0')</span>
+        <span class="s3">//then ignore the remaining char until the nearest position which is power of 4.</span>
+
+        <span class="s0">boolean </span><span class="s1">cont = </span><span class="s0">true;</span>
+        <span class="s0">int </span><span class="s1">char_count = </span><span class="s4">6</span><span class="s0">;</span>
+        <span class="s0">int </span><span class="s1">pos = </span><span class="s4">6</span><span class="s0">;</span>
+        <span class="s1">String result = </span><span class="s2">&quot;&quot;</span><span class="s0">;</span>
+        <span class="s0">while</span><span class="s1">(cont){</span>
+            <span class="s1">String payload = msg.substring(pos</span><span class="s0">, </span><span class="s1">pos+</span><span class="s4">5</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">char_count += </span><span class="s4">5</span><span class="s0">;</span>
+            <span class="s0">if</span><span class="s1">(payload.charAt(</span><span class="s4">0</span><span class="s1">) == </span><span class="s2">'0'</span><span class="s1">){</span>
+                <span class="s1">cont = </span><span class="s0">false;</span>
+            <span class="s1">}</span>
+            <span class="s1">result += payload.substring(</span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">System.out.println(payload.substring(</span><span class="s4">1</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s3">//calculate the whole length of the package</span>
+        <span class="s1">char_count = char_count + </span><span class="s4">4 </span><span class="s1">- (char_count%</span><span class="s4">4</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s3">//return the length of the package</span>
+        <span class="s0">return </span><span class="s1">char_count</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static </span><span class="s1">String processOperator_15(String msg){</span>
+        <span class="s3">//msg with type ID other than 4</span>
+        <span class="s0">int </span><span class="s1">char_count = </span><span class="s4">6</span><span class="s0">;</span>
+        <span class="s0">int </span><span class="s1">pos = </span><span class="s4">6</span><span class="s0">;</span>
+        <span class="s1">System.out.println(</span><span class="s2">&quot;Operator packet, I is 0&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s3">//the following 15 bits are the total length in bits of the sub-packets contained by this packet</span>
+        <span class="s0">int </span><span class="s1">total_length=Integer.parseInt(msg.substring(pos+</span><span class="s4">1</span><span class="s0">, </span><span class="s1">pos+</span><span class="s4">1</span><span class="s1">+</span><span class="s4">15</span><span class="s1">)</span><span class="s0">, </span><span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">System.out.println(msg.substring(pos+</span><span class="s4">1</span><span class="s1">+</span><span class="s4">15</span><span class="s0">, </span><span class="s1">pos+</span><span class="s4">1</span><span class="s1">+</span><span class="s4">15</span><span class="s1">+total_length))</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">msg.substring(pos+</span><span class="s4">1</span><span class="s1">+</span><span class="s4">15</span><span class="s0">, </span><span class="s1">pos+</span><span class="s4">1</span><span class="s1">+</span><span class="s4">15</span><span class="s1">+total_length)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">processOperator_11(String msg){</span>
+        <span class="s0">int </span><span class="s1">pos = </span><span class="s4">6</span><span class="s0">;</span>
+        <span class="s1">System.out.println(</span><span class="s2">&quot;Operator packet, I is 1&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s0">int </span><span class="s1">numPacket=Integer.parseInt(msg.substring(pos+</span><span class="s4">1</span><span class="s0">, </span><span class="s1">pos+</span><span class="s4">1</span><span class="s1">+</span><span class="s4">11</span><span class="s1">)</span><span class="s0">, </span><span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">numPacket</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static </span><span class="s1">String hex2bin(</span><span class="s0">char </span><span class="s1">c){</span>
+        <span class="s3">//return the char c's correcponding binary representation</span>
+        <span class="s1">Map&lt;Character</span><span class="s0">, </span><span class="s1">String&gt; map = Map.ofEntries(</span>
+                <span class="s1">entry(</span><span class="s2">'0'</span><span class="s0">, </span><span class="s2">&quot;0000&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'1'</span><span class="s0">, </span><span class="s2">&quot;0001&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'2'</span><span class="s0">, </span><span class="s2">&quot;0010&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'3'</span><span class="s0">, </span><span class="s2">&quot;0011&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'4'</span><span class="s0">, </span><span class="s2">&quot;0100&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'5'</span><span class="s0">, </span><span class="s2">&quot;0101&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'6'</span><span class="s0">, </span><span class="s2">&quot;0110&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'7'</span><span class="s0">, </span><span class="s2">&quot;0111&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'8'</span><span class="s0">, </span><span class="s2">&quot;1000&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'9'</span><span class="s0">, </span><span class="s2">&quot;1001&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'A'</span><span class="s0">, </span><span class="s2">&quot;1010&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'B'</span><span class="s0">, </span><span class="s2">&quot;1011&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'C'</span><span class="s0">, </span><span class="s2">&quot;1100&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'D'</span><span class="s0">, </span><span class="s2">&quot;1101&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'E'</span><span class="s0">, </span><span class="s2">&quot;1110&quot;</span><span class="s1">)</span><span class="s0">,</span>
+                <span class="s1">entry(</span><span class="s2">'F'</span><span class="s0">, </span><span class="s2">&quot;1111&quot;</span><span class="s1">)</span>
+        <span class="s1">)</span><span class="s0">;</span>
+        <span class="s0">return </span><span class="s1">map.get(c)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static int </span><span class="s1">readNBits(Queue&lt;Character&gt; input</span><span class="s0">, int </span><span class="s1">bitCount){</span>
+        <span class="s0">int </span><span class="s1">val = </span><span class="s4">0</span><span class="s0">;</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">n=</span><span class="s4">0</span><span class="s0">;</span><span class="s1">n&lt;bitCount</span><span class="s0">;</span><span class="s1">n++){</span>
+            <span class="s0">if</span><span class="s1">(input.remove() == </span><span class="s2">'1'</span><span class="s1">){</span>
+                <span class="s1">val = (val&lt;&lt;</span><span class="s4">1</span><span class="s1">) | </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span><span class="s0">else</span><span class="s1">{</span>
+                <span class="s1">val &lt;&lt;= </span><span class="s4">1</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">val</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    <span class="s0">private static long </span><span class="s1">readLiteral(Queue&lt;Character&gt; input){</span>
+        <span class="s0">long </span><span class="s1">val = </span><span class="s4">0</span><span class="s0">;</span>
+        <span class="s0">while</span><span class="s1">(</span><span class="s0">true</span><span class="s1">){</span>
+            <span class="s0">int </span><span class="s1">chunk = readNBits(input</span><span class="s0">, </span><span class="s4">5</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">val = (val &lt;&lt; </span><span class="s4">4</span><span class="s1">) | (chunk &amp; </span><span class="s4">0b1111</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s0">if</span><span class="s1">((chunk &amp; </span><span class="s4">0b10000</span><span class="s1">) == </span><span class="s4">0</span><span class="s1">){</span>
+                <span class="s0">break;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">val</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private static </span><span class="s1">Packet processPacket(Queue&lt;Character&gt; input){</span>
+        <span class="s1">System.out.println(input)</span><span class="s0">;</span>
+        <span class="s0">int </span><span class="s1">version = getMsgVersion(input)</span><span class="s0">;</span>
+        <span class="s1">System.out.println(input)</span><span class="s0">;</span>
+        <span class="s0">int </span><span class="s1">type = getMsgType(input)</span><span class="s0">;</span>
+        <span class="s1">System.out.println(input)</span><span class="s0">;</span>
+        <span class="s1">List&lt;Packet&gt; subPackets = </span><span class="s0">new </span><span class="s1">ArrayList&lt;Packet&gt;()</span><span class="s0">;</span>
+        <span class="s0">if</span><span class="s1">(type == </span><span class="s4">4</span><span class="s1">){</span>
+            <span class="s1">System.out.println(</span><span class="s2">&quot;Type = 4!&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s0">long </span><span class="s1">val = readLiteral(input)</span><span class="s0">;</span>
+            <span class="s0">return new </span><span class="s1">Packet(version</span><span class="s0">, </span><span class="s1">type</span><span class="s0">, </span><span class="s1">OptionalLong.of(val)</span><span class="s0">, </span><span class="s1">Optional.empty())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        <span class="s0">else</span><span class="s1">{</span>
+            <span class="s0">char </span><span class="s1">length_type = input.remove()</span><span class="s0">;</span>
+            <span class="s0">if</span><span class="s1">(length_type == </span><span class="s2">'1'</span><span class="s1">){</span>
+                <span class="s0">int </span><span class="s1">numSubPacket = readNumSubPacket(input)</span><span class="s0">;</span>
+                <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s4">0</span><span class="s0">; </span><span class="s1">i&lt;numSubPacket</span><span class="s0">; </span><span class="s1">i++){</span>
+                    <span class="s1">subPackets.add(processPacket(input))</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">else</span><span class="s1">{</span>
+                <span class="s3">//length_type = 0;</span>
+                <span class="s0">int </span><span class="s1">numOfBits = readNumBit(input)</span><span class="s0">;</span>
+                <span class="s0">int </span><span class="s1">target_size = input.size() - numOfBits</span><span class="s0">;</span>
+                <span class="s0">while</span><span class="s1">(input.size()!= target_size) {</span>
+                    <span class="s1">subPackets.add(processPacket(input))</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+
+        <span class="s0">return new </span><span class="s1">Packet(version</span><span class="s0">, </span><span class="s1">type</span><span class="s0">,</span><span class="s1">OptionalLong.empty()</span><span class="s0">, </span><span class="s1">Optional.of(subPackets))</span><span class="s0">;</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+<span class="s1">record Packet(</span><span class="s0">int </span><span class="s1">version</span><span class="s0">, long </span><span class="s1">type</span><span class="s0">,  </span><span class="s1">OptionalLong value</span><span class="s0">, </span><span class="s1">Optional&lt;List&lt;Packet&gt;&gt; subPacket){</span>
+    <span class="s0">public int </span><span class="s1">sumVersions(){</span>
+        <span class="s0">if</span><span class="s1">(value.isPresent()){</span>
+            <span class="s0">return </span><span class="s1">version</span><span class="s0">;</span>
+        <span class="s1">}</span><span class="s0">else</span><span class="s1">{</span>
+            <span class="s0">return </span><span class="s1">version + subPacket.get().stream().collect(Collectors.summingInt(Packet::sumVersions))</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>
